@@ -30,7 +30,7 @@ git clone git@github.com:dshimo/ANSCRainfallGraph.git
 
 HTTP:
 ```
-git@github.com:dshimo/ANSCRainfallGraph.git  
+git clone https://github.com/dshimo/ANSCRainfallGraph.git 
 ```
 
 Install the dependencies:
