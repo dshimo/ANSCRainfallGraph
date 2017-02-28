@@ -14,7 +14,7 @@ This is intended for the team if working on the CS machines.
 Set up your virtual environment and source it:  
 ```
 virtualenv -p python3.5 ~/venv/ANSCRainfallGraph  
-source ~/venv/ANSCRainfallGraph  
+source ~/venv/ANSCRainfallGraph/bin/activate  
 ```
 Deactivate your virtual environment by simply using:  
 ```
