@@ -38,4 +38,10 @@ Install the dependencies:
 pip install -r requirements.txt  
 ```
 
-Remember to work on a separate branch and not push to master.
+Run apiworker.py to build the database  
+```
+python apiworker.py  
+```
+
+To view the database, use your own SQLite viewer.  
+A console viewer you can use is `sqlite3`  
