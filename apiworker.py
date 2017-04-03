@@ -1,18 +1,18 @@
 import requests
 import dateutil.parser
-from models import DischargeRate
+import datetime
+from models import DischargeRate, GageHeight, Rainfall
+from pony import orm
 
 # Parameter codes
-parameter_codes = {'00060': 'discharge', '00065': "gage_height"}
-
-# Hard coded URL for Barton Springs, Austin TX
-# url = 'https://waterservices.usgs.gov/nwis/iv/?format=json&indent=on&\
-# sites=08155500&period=P365D&parameterCd=00060,00065&siteStatus=all'
+DISCHARGE = '00060'
+GAGE_HEIGHT = '00065'
+RAINFALL = 'RAIN'
 
 
 def get_values(period, site, *params):
     """
-    Get values from the USGS API. Returns {'paramcode': [(dateTime, value),],}
+    Get values from the USGS API and WUNDERGROUND. Returns {'paramcode': [(dateTime, value),],}
     :int period: period for data in days
     :str site: site code
     :list params: list of param codes
@@ -39,8 +39,35 @@ def get_values(period, site, *params):
             cur_value = value["value"]
             cur_values.append((cur_date, cur_value))
         result[cur_param] = cur_values
+    url = "http://api.wunderground.com/api/"
+    url += open('WUNDERGROUNDAPIKEY').readline().strip()
+    url += '/conditions/q/TX/Austin.json'
+    response = requests.get(url)
+    cur_value = float(response.json()['current_observation']['precip_1hr_in'])
+    cur_date = response.json()['current_observation']['observation_epoch']
+    cur_date = datetime.datetime.fromtimestamp(int(cur_date))
+    result[RAINFALL] = [(cur_date, cur_value)]
     return result
 
 
-result = get_values(7, '08155500', '00060', '00065')
+def update_db(period):
+    with orm.db_session:
+        result = get_values(period, '08155500', '00060', '00065')
+        for key in result.keys():
+            if key == DISCHARGE:
+                for value in result[key]:
+                    if not orm.exists(v for v in DischargeRate if v.time_stamp == value[0]):
+                        DischargeRate(time_stamp=value[0], value=value[1])
+            elif key == GAGE_HEIGHT:
+                for value in result[key]:
+                    if not orm.exists(v for v in GageHeight if v.time_stamp == value[0]):
+                        GageHeight(time_stamp=value[0], value=value[1])
+            elif key == RAINFALL:
+                for value in result[key]:
+                    if not orm.exists(v for v in Rainfall if v.time_stamp == value[0]):
+                        Rainfall(time_stamp=value[0], value=value[1])
 
+
+update_db(1)
+# with orm.db_session:
+#     orm.select(d for d in DischargeRate).show()

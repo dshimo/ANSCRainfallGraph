@@ -7,12 +7,16 @@ db = orm.Database("sqlite",
 
 
 class DischargeRate(db.Entity):
-    time_stamp = orm.Required(datetime.datetime)
+    time_stamp = orm.PrimaryKey(datetime.datetime)
     value = orm.Required(float)
 
 
 class GageHeight(db.Entity):
-    time_stamp = orm.Required(datetime.datetime)
+    time_stamp = orm.PrimaryKey(datetime.datetime)
     value = orm.Required(float)
 
+
+class Rainfall(db.Entity):
+    time_stamp = orm.PrimaryKey(datetime.datetime)
+    value = orm.Required(float)
 db.generate_mapping(create_tables=True)
