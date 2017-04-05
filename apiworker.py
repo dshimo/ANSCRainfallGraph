@@ -69,5 +69,3 @@ def update_db(period):
 
 
 update_db(1)
-# with orm.db_session:
-#     orm.select(d for d in DischargeRate).show()
