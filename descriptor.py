@@ -30,7 +30,7 @@ def gage_text(gage_height):
     print(description)
 
 def convert(graph, val):
-    word = (graph.keys())[randint(0,len(graph) - 1)]
+    word = list(graph)[randint(0,len(graph) - 1)]
     conversion = int(round(graph[word](val), 0))
     return " That's" + ADJECTIVE[randint(0,4)] + EQUALITY[randint(0,4)] + " " + str(conversion) + " " + word + "!"
 
