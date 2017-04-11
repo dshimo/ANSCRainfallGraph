@@ -1,12 +1,17 @@
 @import url('https://fonts.googleapis.com/css?family=Anonymous+Pro|Cutive+Mono|Press+Start+2P|VT323');
 
+:root {
+    --main-font-color: #FCE694;
+    --main-bg-color: #383F51;
+}
+
 *{
-    background-color: #49dbff;
+    background-color: var(--main-bg-color);
 }
 
 .title{
     font-family: 'Press Start 2P', cursive;
-    color: white;
+    color: var(--main-font-color);
     text-align: center;
     font-size: 5em;
     /*line-height: 110%;*/
@@ -25,7 +30,7 @@
     flex: 1;
     padding: 20px;
     font-family: 'Anonymous Pro', monospace;
-    color: white;
+    color: var(--main-font-color);
     font-size: 2em;
     /*border: ridge 1px white;*/
 }
