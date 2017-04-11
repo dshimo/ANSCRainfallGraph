@@ -1,3 +1,5 @@
+import datetime
+import threading
 from flask import Flask
 import sys
 from apiworker import update_db
@@ -5,6 +7,7 @@ from grapher import update_graphs
 from flask_apscheduler import APScheduler
 
 app = Flask(__name__)
+logger_lock = threading.Lock()
 
 
 class Config(object):
@@ -26,16 +29,33 @@ class Config(object):
     ]
 
 
+def log(string):
+    with logger_lock:
+        log = open('log.txt', 'a')
+        now = datetime.datetime.now()
+        print(str(now), end=": ", file=sys.stderr)
+        print(string, file=sys.stderr)
+        print(str(now), end=": ", file=log)
+        print(string, file=log)
+        log.close()
+
+
 def apiworker_update():
-    print("Updating database...", file=sys.stderr)
+    log("Updating database...")
     update_db(1)
-    print("Finished updating database!", file=sys.stderr)
+    log("Finished updating database!")
 
 
 def grapher_update():
-    print("Generating new graphs...", file=sys.stderr)
+    log("Generating new graphs...")
     update_graphs()
-    print("Finished generating graphs!!", file=sys.stderr)
+    log("Finished generating graphs!")
+
+
+app.config.from_object(Config())
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
 
 
 @app.route("/")
@@ -43,8 +63,4 @@ def hello():
     return app.send_static_file('main.html')
 
 if __name__ == "__main__":
-    app.config.from_object(Config())
-    scheduler = APScheduler()
-    scheduler.init_app(app)
-    scheduler.start()
     app.run()
