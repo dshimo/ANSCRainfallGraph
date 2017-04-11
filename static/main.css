@@ -17,10 +17,6 @@
     /*line-height: 110%;*/
 }
 
-.grid {
-    /*border: solid 1px white;*/
-}
-
 .grid__row {
     display: flex;
     padding: 20px;

@@ -83,7 +83,6 @@ def plot_vals(Database, days):
         axes.set_facecolor((1, 1, 1, 0))
         # Set line width
         plt.setp(line, linewidth=5, color=GRAPH_COLOR)
-        y_label = ""
         if Database == DischargeRate:
             y_label = 'Flow Speed ($ft^3$/s)'
         else:
@@ -104,7 +103,7 @@ def plot_vals(Database, days):
         labels = [date.strftime('%a\n(%m/%d)') for date in labels]
         axes.set_xticklabels(labels)
 
-        fig.savefig('res/gen/' + Database.__name__ + '.png', facecolor=(1, 1, 1, 0), bbox_inches='tight', dpi=120)
+        fig.savefig('./static/' + Database.__name__ + '.png', facecolor=(1, 1, 1, 0), bbox_inches='tight', dpi=120)
 
 
 plot_vals(GageHeight, 5)

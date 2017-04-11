@@ -1,6 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script>
+        var dischargeRateTexts = ["The depth of Barton Springs is currently 25 feet. That's deep enough to sink a car!",
+            "Barton Springs is currently deep enough for a T-rex to bathe in!"];
+        var gageHeightTexts = ["The Springs are flowing at a rate of 110 ft\u003csup\u003e3\u003c\u002Fsup\u003e. That's like 200 supersoakers firing at the same time!",
+            "The flow speed is currently 110 ft\u003csup\u003e3\u003c\u002Fsup\u003e. That's like 900 toilets flushing together!"];
+        // These lists are used to keep track of which texts have already been displayed
+        var dischargeRateTextsUsed = [];
+        var gageHeightTextsUsed = [];
+        var delay = 5000;
+        // Figure out what text to display next
+        // dischargeRate: true if this text is for discharge rate, false if for gage height
+        function getText(dischargeRate)
+        {
+            var curTexts = gageHeightTexts;
+            var curTextsUsed = gageHeightTextsUsed;
+            if (dischargeRate)
+            {
+                curTexts = dischargeRateTexts;
+                curTextsUsed = dischargeRateTextsUsed;
+            }
+            var updated = false;
+            if (curTexts.length === curTextsUsed.length)
+            {
+                // If we've already used all the available texts,
+                // delete all the indexes and start over
+                curTextsUsed.splice(0, curTextsUsed.length)
+            }
+            var curIndex = -1;
+            while (!updated)
+            {
+                curIndex = Math.floor(Math.random() * curTexts.length);
+                var usedIndex = $.inArray(curIndex, curTextsUsed);
+                if (usedIndex === -1)
+                {
+                    curTextsUsed.push(curIndex);
+                    updated = true;
+                }
+            }
+            return curTexts[curIndex];
+        }
+        // Fade out and fade in a div, change its text
+        function updateDiv(divID, text)
+        {
+            $(divID).fadeOut('slow', function() {
+                $(divID).html(text);
+                setTimeout(function() { $(divID).fadeIn('slow'); }, 500);
+            });
+        }
+
+        function changeTexts()
+        {
+            updateDiv("#dischargeRateText", getText(true));
+            updateDiv("#gageHeightText", getText(false));
+            setTimeout(delayedCall, delay)
+        }
+        function delayedCall()
+        {
+            // Calls changeTexts after 2500 ms
+            setTimeout(changeTexts, delay)
+        }
+        changeTexts();
+    </script>
     <meta charset="UTF-8">
     <title>Barton Springs Rainfall Graph</title>
     <link rel="stylesheet" href="static/main.css">
@@ -13,9 +76,8 @@
         <div class="grid__item"><img src="/static/DischargeRate.png"></div>
     </div>
     <div class="grid__row">
-        <div class="grid__item">The depth of Barton Springs is currently 25 feet. That's deep enough to sink a car!</div>
-        <div class="grid__item">The Springs are flowing at a rate of 110 ft<sup>3</sup>. That's like 200 supersoakers
-            firing at the same time!</div>
+        <div class="grid__item" id="dischargeRateText">Loading text...</div>
+        <div class="grid__item" id="gageHeightText">Loading text...</div>
     </div>
 </div>
 </body>
