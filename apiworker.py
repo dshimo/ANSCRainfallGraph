@@ -63,18 +63,3 @@ def update_db(period):
                 for value in result[key]:
                     if not orm.exists(v for v in Rainfall if v.time_stamp == value[0]):
                         Rainfall(time_stamp=value[0], value=value[1])
-
-
-
-update_db(365)
-# class Worker(threading.Thread):
-#     def run(self):
-#         while True:
-#             print("Worker updating database", file=sys.stderr)
-#             update_db(1)
-#             time.sleep(10)
-#
-# if __name__ == "__main__":
-#     w = Worker()
-#     # w.setDaemon()
-#     w.start()

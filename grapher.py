@@ -106,5 +106,6 @@ def plot_vals(Database, days):
         fig.savefig('./static/' + Database.__name__ + '.png', facecolor=(1, 1, 1, 0), bbox_inches='tight', dpi=120)
 
 
-plot_vals(GageHeight, 5)
-plot_vals(DischargeRate, 5)
+def update_graphs():
+    plot_vals(GageHeight, 5)
+    plot_vals(DischargeRate, 5)
