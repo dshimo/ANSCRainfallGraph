@@ -1,13 +1,16 @@
 import requests
 import dateutil.parser
-import datetime
 from models import DischargeRate, GageHeight, Rainfall
 from pony import orm
 
 # Parameter codes
 DISCHARGE = '00060'
 GAGE_HEIGHT = '00065'
-RAINFALL = 'RAIN'
+RAINFALL = '00045'
+
+# Site codes
+BARTON = '08155500'
+WELLS_BRANCH = '08158110'
 
 
 def get_values(period, site, *params):
@@ -39,20 +42,14 @@ def get_values(period, site, *params):
             cur_value = value["value"]
             cur_values.append((cur_date, cur_value))
         result[cur_param] = cur_values
-    url = "http://api.wunderground.com/api/"
-    url += open('WUNDERGROUNDAPIKEY').readline().strip()
-    url += '/conditions/q/TX/Austin.json'
-    response = requests.get(url)
-    cur_value = float(response.json()['current_observation']['precip_1hr_in'])
-    cur_date = response.json()['current_observation']['observation_epoch']
-    cur_date = datetime.datetime.fromtimestamp(int(cur_date))
-    result[RAINFALL] = [(cur_date, cur_value)]
     return result
 
 
 def update_db(period):
     with orm.db_session:
-        result = get_values(period, '08155500', '00060', '00065')
+        barton = get_values(period, BARTON, DISCHARGE, GAGE_HEIGHT)
+        rainfall = get_values(period, WELLS_BRANCH, RAINFALL)
+        result = {**barton, **rainfall}
         for key in result.keys():
             if key == DISCHARGE:
                 for value in result[key]:
@@ -66,8 +63,3 @@ def update_db(period):
                 for value in result[key]:
                     if not orm.exists(v for v in Rainfall if v.time_stamp == value[0]):
                         Rainfall(time_stamp=value[0], value=value[1])
-
-
-update_db(1)
-# with orm.db_session:
-#     orm.select(d for d in DischargeRate).show()
