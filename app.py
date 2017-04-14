@@ -1,10 +1,11 @@
 import datetime
 import threading
-from flask import Flask
+from flask import Flask,jsonify
 import sys
 from apiworker import update_db
 from grapher import update_graphs
 from flask_apscheduler import APScheduler
+from descriptor import make_descriptions
 
 app = Flask(__name__)
 logger_lock = threading.Lock()
@@ -61,6 +62,11 @@ scheduler.start()
 @app.route("/")
 def hello():
     return app.send_static_file('main.html')
+
+@app.route("/descriptor")
+def descriptor():
+    d = make_descriptions()
+    return jsonify(d)
 
 if __name__ == "__main__":
     app.run()
