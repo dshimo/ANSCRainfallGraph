@@ -3,24 +3,37 @@
 <head>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script>
-        var dischargeRateTexts = ["The depth of Barton Springs is currently 25 feet. That's deep enough to sink a car!",
+        var textEnum =
+        {
+            DISCHARGE_RATE: 1,
+            GAGE_HEIGHT: 2,
+            FAQ: 3
+        };
+        var gageHeightTexts = ["The depth of Barton Springs is currently 25 feet. That's deep enough to sink a car!",
             "Barton Springs is currently deep enough for a T-rex to bathe in!"];
-        var gageHeightTexts = ["The Springs are flowing at a rate of 110 ft\u003csup\u003e3\u003c\u002Fsup\u003e. That's like 200 supersoakers firing at the same time!",
+        var dischargeRateTexts = ["The Springs are flowing at a rate of 110 ft\u003csup\u003e3\u003c\u002Fsup\u003e. That's like 200 supersoakers firing at the same time!",
             "The flow speed is currently 110 ft\u003csup\u003e3\u003c\u002Fsup\u003e. That's like 900 toilets flushing together!"];
+        var faqTexts = ["The temperature of Barton Springs is 68-70 degrees year round.", "The outflow of Barton Springs measures between 30-50 million gallons a day."];
         // These lists are used to keep track of which texts have already been displayed
         var dischargeRateTextsUsed = [];
         var gageHeightTextsUsed = [];
+        var faqTextsUsed = [];
         var delay = 5000;
         // Figure out what text to display next
         // dischargeRate: true if this text is for discharge rate, false if for gage height
-        function getText(dischargeRate)
+        function getText(text)
         {
             var curTexts = gageHeightTexts;
             var curTextsUsed = gageHeightTextsUsed;
-            if (dischargeRate)
+            if (text === textEnum.DISCHARGE_RATE)
             {
                 curTexts = dischargeRateTexts;
                 curTextsUsed = dischargeRateTextsUsed;
+            }
+            else if (text === textEnum.FAQ)
+            {
+                curTexts = faqTexts;
+                curTextsUsed = faqTextsUsed;
             }
             var updated = false;
             if (curTexts.length === curTextsUsed.length)
@@ -53,8 +66,9 @@
 
         function changeTexts()
         {
-            updateDiv("#dischargeRateText", getText(true));
-            updateDiv("#gageHeightText", getText(false));
+            updateDiv("#dischargeRateText", getText(textEnum.DISCHARGE_RATE));
+            updateDiv("#gageHeightText", getText(textEnum.GAGE_HEIGHT));
+            updateDiv("#faqText", getText(textEnum.FAQ));
             setTimeout(delayedCall, delay)
         }
         function delayedCall()
@@ -62,22 +76,91 @@
             // Calls changeTexts after delay
             setTimeout(changeTexts, delay)
         }
+        function updateTextLists()
+        {
+
+        }
         changeTexts();
     </script>
     <meta charset="UTF-8">
     <title>Barton Springs Rainfall Graph</title>
-    <link rel="stylesheet" href="static/main.css">
+    <link rel="stylesheet" href="/static/main.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css" type="text/css" >
 </head>
 <body>
-<h1 class="title">Barton Springs Condition</h1>
-<div class="grid">
-    <div class="grid__row">
-        <div class="grid__item"><img src="/static/GageHeight.png"></div>
-        <div class="grid__item"><img src="/static/DischargeRate.png"></div>
+<h1 class="title">BARTON SPRINGS CONDITIONS</h1>
+<div class="row
+            center-xs
+            center-sm
+            center-md
+            center-lg
+            faqRow">
+    <div class="col-xs-6
+                col-sm-6
+                col-md-6
+                col-lg-6">
+        <div class="descriptor" id="faqText">Loading text...
+        </div>
     </div>
-    <div class="grid__row">
-        <div class="grid__item" id="dischargeRateText">Loading text...</div>
-        <div class="grid__item" id="gageHeightText">Loading text...</div>
+</div>
+<div class="row
+            center-xs
+            center-sm
+            center-md
+            center-lg">
+    <div class="col-xs-12
+                col-sm-8
+                col-md-6
+                col-lg-6">
+        <div class="graphTitle">Depth</div>
+    </div>
+    <div class="col-xs-12
+                col-sm-8
+                col-md-6
+                col-lg-6">
+        <div class="graphTitle">Flow Speed</div>
+    </div>
+</div>
+<div class="row
+            around-xs
+            around-sm
+            around-md
+            around-lg">
+    <div class="col-xs-12
+                col-sm-8
+                col-md-6
+                col-lg-6
+                graphContainer">
+        <img height="609" width="900" src="/static/GageHeight.png" />
+    </div>
+    <div class="col-xs-12
+                col-sm-8
+                col-md-6
+                col-lg-6
+                graphContainer">
+        <img height="609" width="900" src="/static/DischargeRate.png" />
+    </div>
+</div>
+<div class="row
+            center-xs
+            center-sm
+            center-md
+            center-lg">
+    <div class="col-xs-6
+                col-sm-6
+                col-md-6
+                col-lg-6
+                descriptorContainer">
+        <div class="descriptor" id="gageHeightText">Loading text...
+        </div>
+    </div>
+    <div class="col-xs-6
+                col-sm-6
+                col-md-6
+                col-lg-6
+                descriptorContainer">
+        <div class="descriptor" id="dischargeRateText">Loading text...
+        </div>
     </div>
 </div>
 </body>

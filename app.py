@@ -18,13 +18,6 @@ class Config(object):
             'args': (),
             'trigger': 'interval',
             'seconds': 3600  # Update the database once an hour
-        },
-        {
-            'id': 'job2',
-            'func': 'app:grapher_update',
-            'args': (),
-            'trigger': 'interval',
-            'seconds': 86400  # Generate new graphs once a day
         }
     ]
 
@@ -44,12 +37,6 @@ def apiworker_update():
     log("Updating database...")
     update_db(1)
     log("Finished updating database!")
-
-
-def grapher_update():
-    log("Generating new graphs...")
-    update_graphs()
-    log("Finished generating graphs!")
 
 
 app.config.from_object(Config())

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Anonymous+Pro|Cutive+Mono|Press+Start+2P|VT323');
+@import url('https://fonts.googleapis.com/css?family=Arimo|Fjalla+One');
 
 :root {
     --main-font-color: #FCE694;
@@ -10,23 +10,40 @@
 }
 
 .title{
-    font-family: 'Press Start 2P', cursive;
+    font-family: 'Fjalla One', sans-serif;
     color: var(--main-font-color);
     text-align: center;
-    font-size: 5em;
-    /*line-height: 110%;*/
+    font-size: 6em;
+    margin-top: 0.1em;
+    margin-bottom: 0;
 }
 
-.grid__row {
-    display: flex;
-    padding: 20px;
+.col-lg-6{
+    padding: 10px;
 }
 
-.grid__item {
-    flex: 1;
-    padding: 20px;
-    font-family: 'Anonymous Pro', monospace;
+.graphTitle{
+    color: var(--main-font-color);
+    font-family: 'Fjalla One', sans-serif;
+    font-size: 4em;
+}
+
+.graphContainer{
+    flex-basis: 0 !important;
+}
+
+.descriptorContainer{
+    height: 2em;
+}
+
+.descriptor {
+    font-family: 'Fjalla One', sans-serif;
     color: var(--main-font-color);
     font-size: 2em;
-    /*border: ridge 1px white;*/
+    padding-left: 3em;
+    padding-right: 3em;
+    padding-bottom: 3em;
+}
+.faqRow{
+    height: 6em;
 }

@@ -94,7 +94,7 @@ def plot_vals(Database, days):
         rain_axes = axes.twinx()
         rain_line = rain_axes.plot(rain_x, rain_y)
         plt.setp(rain_line, linewidth=5, color=RAINFALL_COLOR)
-        rain_axes.set_ylabel('Rainfall (inches)', color=RAINFALL_COLOR)
+        rain_axes.set_ylabel('Total Rainfall (inches)', color=RAINFALL_COLOR)
         rain_axes.tick_params('y', colors=RAINFALL_COLOR)
 
         # Convert the x axis labels to days of the week
@@ -103,9 +103,9 @@ def plot_vals(Database, days):
         labels = [date.strftime('%a\n(%m/%d)') for date in labels]
         axes.set_xticklabels(labels)
 
-        fig.savefig('./static/' + Database.__name__ + '.png', facecolor=(1, 1, 1, 0), bbox_inches='tight', dpi=120)
+        fig.savefig('./static/' + Database.__name__ + '.png', facecolor=(1, 1, 1, 0), bbox_inches='tight', dpi=230)
 
 
 def update_graphs():
-    plot_vals(GageHeight, 5)
-    plot_vals(DischargeRate, 5)
+    plot_vals(GageHeight, 10)
+    plot_vals(DischargeRate, 10)
