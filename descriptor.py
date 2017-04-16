@@ -1,13 +1,18 @@
 from random import uniform,randint
+from models import DischargeRate,GageHeight
+from pony import orm
+import datetime
+import dateutil.parser as dparser
 
 # "lawns"   : (lambda x: x*145.29*6048000, "That's enough to water @ lawns per week!"),
-DISCHARGE = {"bottles" : (lambda x: x*56.6337,"That's like pouring @ bottles per second!"), 
-             "spit"    : (lambda x: x, "That's the same as @ people spitting at the same time!"),
+# milk to cereal was too variable. made it into glasses of milk instead. used 8oz cups
+# spits are also variable
+# "punch"   : (lambda x: x, "That's the same force as getting punched by @ average men!")}
+DISCHARGE = {"bottles" : (lambda x: x*56.6337,"That's like pouring out @ bottles per second!"), 
              "taps"    : (lambda x: x*448.8312, "That's roughly equivalent to @ sinks turned on at the same time!"),
+             "milk"    : (lambda x: x*119.68825, "If Barton Springs was milk, you would need @ glasses every second to catch it all!"),
              "bathtubs": (lambda x: x*314.18184, "That's enough water to fill @ bathtubs per second!"),
-             "toilets" : (lambda x: x/0.0267361, "That's the same rate as @ toilets being flushed at the same time!"),
-             "milk"    : (lambda x: x, "If Barton Springs was milk, you would need to eat @ boxes of cereal per second!"),
-             "punch"   : (lambda x: x, "That's the same force as getting punched by @ average men!")}
+             "toilets" : (lambda x: x/0.0267361, "That's the same rate as @ toilets being flushed at the same time!")}
 
 GAGEHEIGHT = {"cars"    : (lambda x: x/5.0, "That's approximately @ cars stacked on top each other!"),  
               "buses"   : (lambda x: x/10.0, "That's approximately @ buses stacked on top each other!"),
@@ -18,10 +23,7 @@ GAGEHEIGHT = {"cars"    : (lambda x: x/5.0, "That's approximately @ cars stacked
               "house"   : (lambda x: x > 20, "That's enough to submerge a 2-story house!")}
 
 def make_descriptions():
-    discharge_rate = round(uniform(9, 140),2)
-    gage_height    = round(uniform(18, 30),2)
-
-    descriptions = {"discharge":[discharge_text(discharge_rate)], "gage":[gage_text(gage_height)],
+    descriptions = {"discharge":discharge_text(), "gage":gage_text(),
                     "faq":["The temperature of Barton Springs is 68-70 degrees year round.",
                            "The outflow of Barton Springs measures between 30-50 million gallons a day",
                            "Barton Springs is home of the endangered Barton Springs Salamander",
@@ -35,32 +37,45 @@ def make_descriptions():
                            "Barton Springs pool is subject to flooding when there are heavy rains in the hill country",
                            "Barton Springs Salamanders are tailed amphibians that are uniquely adapted to thrive in a spring environment"]}
 
-
-    print(descriptions)
     return descriptions
 
-def discharge_text(discharge_rate):
-    description = current("discharge rate", discharge_rate, "cubic feet per second")
-    description += " " + convert(DISCHARGE, discharge_rate)
-    return description
+def discharge_text():
+    listDescriptions = []
 
-def gage_text(gage_height):
-    description = current("gage height", gage_height, "feet")
-    description += " " + convert(GAGEHEIGHT, gage_height)
-    return description
+    data = current("discharge rate", DischargeRate, "ft\u003csup\u003e3\u003c\u002Fsup\u003e per second")
+    description = data[0]
+    for word in DISCHARGE:
+        val = round(DISCHARGE[word][0](data[1]),2)
+        listDescriptions.append(description + " " + DISCHARGE[word][1].replace("@",str(val)))
 
-def current(strVal, val, strValUnits):
-    return "The " + strVal + " is currently " + str(val) + " " + strValUnits + "."
+    return listDescriptions
 
-def convert(graph, val):
-    word = list(graph)[randint(0,len(graph) - 1)]
+def gage_text():
+    listDescriptions = []
+
+    data = current("gage height", GageHeight, "feet")
+    description = data[0]
+    for word in GAGEHEIGHT:
+        val = GAGEHEIGHT[word][0](data[1])
+        add = val if isinstance(val, bool) else True
+        val = round(val, 2)
+        if add:
+            listDescriptions.append(description + " " + GAGEHEIGHT[word][1].replace("@",str(val)))
     
-    while not graph[word][0](val) and graph == GAGEHEIGHT:
-        word = list(graph)[randint(0,len(graph) - 1)]
+    return listDescriptions 
 
-    conversion = round(graph[word][0](val), 2)
-    conversion = int(conversion) if int(conversion) == conversion else conversion
-    return graph[word][1].replace("@",str(conversion))
+def current(strVal, Database, strValUnits):
+    with orm.db_session:
+        # fetch most current datetime for val
+        latest = orm.max(v.time_stamp for v in Database)
+        if not isinstance(latest, datetime.datetime):
+            latest = dparser.parse(latest)
+        val = orm.select(v for v in Database if v.time_stamp == latest)
+        # should only obtain single element with latest timestamp
+        for v in val:
+            val = v.value
+
+    return ["The " + strVal + " is currently " + str(val) + " " + strValUnits + ".", val]
 
 if __name__ == "__main__":
     make_descriptions()
