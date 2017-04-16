@@ -3,17 +3,16 @@
 <head>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script>
+        var BASEURL = "http://127.0.0.1:5000";
         var textEnum =
         {
             DISCHARGE_RATE: 1,
             GAGE_HEIGHT: 2,
             FAQ: 3
         };
-        var gageHeightTexts = ["The depth of Barton Springs is currently 25 feet. That's deep enough to sink a car!",
-            "Barton Springs is currently deep enough for a T-rex to bathe in!"];
-        var dischargeRateTexts = ["The Springs are flowing at a rate of 110 ft\u003csup\u003e3\u003c\u002Fsup\u003e. That's like 200 supersoakers firing at the same time!",
-            "The flow speed is currently 110 ft\u003csup\u003e3\u003c\u002Fsup\u003e. That's like 900 toilets flushing together!"];
-        var faqTexts = ["The temperature of Barton Springs is 68-70 degrees year round.", "The outflow of Barton Springs measures between 30-50 million gallons a day."];
+        var gageHeightTexts = ["LOADING TEXT"];
+        var dischargeRateTexts = ["LOADING TEXT"];
+        var faqTexts = ["LOADING TEXT"];
         // These lists are used to keep track of which texts have already been displayed
         var dischargeRateTextsUsed = [];
         var gageHeightTextsUsed = [];
@@ -66,21 +65,45 @@
 
         function changeTexts()
         {
+            function delayedCall()
+            {
+                // Calls changeTexts after delay
+                setTimeout(changeTexts, delay)
+            }
             updateDiv("#dischargeRateText", getText(textEnum.DISCHARGE_RATE));
             updateDiv("#gageHeightText", getText(textEnum.GAGE_HEIGHT));
             updateDiv("#faqText", getText(textEnum.FAQ));
-            setTimeout(delayedCall, delay)
-        }
-        function delayedCall()
-        {
-            // Calls changeTexts after delay
-            setTimeout(changeTexts, delay)
+            setTimeout(delayedCall, delay);
         }
         function updateTextLists()
         {
-
+            function delayedCall()
+            {
+                // Calls updateTextLists after delay of one minute
+                setTimeout(updateTextLists, 60000)
+            }
+            $.getJSON(BASEURL.concat("/descriptor"), function(texts)
+            {
+                $.each(texts, function(key, val)
+                {
+                    if(key === "discharge")
+                    {
+                        dischargeRateTexts = val;
+                    }
+                    else if(key === "faq")
+                    {
+                        faqTexts = val;
+                    }
+                    else if(key === "gage")
+                    {
+                        gageHeightTexts = val;
+                    }
+                });
+            });
+            setTimeout(delayedCall, 60000);
         }
-        changeTexts();
+        setTimeout(changeTexts, 10000);
+        updateTextLists();
     </script>
     <meta charset="UTF-8">
     <title>Barton Springs Rainfall Graph</title>
