@@ -50,6 +50,7 @@ scheduler.start()
 def hello():
     return app.send_static_file('main.html')
 
+
 @app.route("/descriptor")
 def descriptor():
     d = make_descriptions()

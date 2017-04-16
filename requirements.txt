@@ -13,7 +13,6 @@ MarkupSafe==1.0
 matplotlib==2.0.0
 numpy==1.12.1
 packaging==16.8
-pkg-resources==0.0.0
 pony==0.7.1
 pycodestyle==2.3.1
 pyparsing==2.1.10
