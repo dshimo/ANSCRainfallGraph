@@ -16,7 +16,7 @@ DISCHARGE = {"bottles" : (lambda x: x*56.6337,"That's like pouring out @ bottles
 
 GAGEHEIGHT = {"cars"    : (lambda x: x/5.0, "That's approximately @ cars stacked on top each other!"),  
               "buses"   : (lambda x: x/10.0, "That's approximately @ buses stacked on top each other!"),
-              "Shaquille O'Neals": (lambda x: x/85.0, "That's @ Shaquille O'Neals stacked from head to toe!"),
+              "Shaquille O'Neals": (lambda x: x/7.08333, "That's @ Shaquille O'Neals stacked from head to toe!"),
               "whale"   : (lambda x: x > 20, "That's deep enough for a blue whale to swim in!"),
               "giraffe" : (lambda x: x > 16, "That's deep enough for a giraffe to swim in!"),
               "trex"    : (lambda x: x > 20, "That means a T-Rex could take a bath in Barton Springs!"),
