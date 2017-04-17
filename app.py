@@ -8,6 +8,7 @@ from models import GageHeight, DischargeRate
 from flask_apscheduler import APScheduler
 from descriptor import make_descriptions
 import base64
+import os
 
 app = Flask(__name__)
 logger_lock = threading.Lock()
@@ -46,6 +47,8 @@ app.config.from_object(Config())
 scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
+if not os.path.exists("./gen"):
+    os.makedirs("./gen")
 
 
 @app.route("/")

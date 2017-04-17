@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as font_manager
 from models import DischargeRate, GageHeight, Rainfall
 from pony import orm
 import datetime
@@ -77,6 +78,8 @@ def plot_vals(Database, days):
     rain_x, rain_y = get_vals(Rainfall, days)
     cumulative(rain_y)
     x, y = smooth_vals(x, y, days, 12)
+    label_font = font_manager.FontProperties(fname='./fonts/Oswald-Bold.ttf', size=18)
+    tick_font = font_manager.FontProperties(fname='./fonts/Oswald-Regular.ttf', size=12)
     with plt.rc_context({'axes.edgecolor': EDGE_COLOR, 'xtick.color': X_TICK_COLOR}):
         fig, axes = plt.subplots()
         line = axes.plot(x, y, 'w-')
@@ -87,15 +90,19 @@ def plot_vals(Database, days):
             y_label = 'Flow Speed ($ft^3$/s)'
         else:
             y_label = 'Depth (ft)'
-        axes.set_ylabel(y_label, color=GRAPH_COLOR)
+        axes.set_ylabel(y_label, color=GRAPH_COLOR, fontproperties=label_font)
         axes.tick_params('y', colors=GRAPH_COLOR)
+        for label in (axes.get_xticklabels() + axes.get_yticklabels()):
+            label.set_fontproperties(tick_font)
 
         # Plot the rainfall
         rain_axes = axes.twinx()
         rain_line = rain_axes.plot(rain_x, rain_y)
         plt.setp(rain_line, linewidth=5, color=RAINFALL_COLOR)
-        rain_axes.set_ylabel('Total Rainfall (inches)', color=RAINFALL_COLOR)
+        rain_axes.set_ylabel('Total Rainfall (inches)', color=RAINFALL_COLOR, fontproperties=label_font)
         rain_axes.tick_params('y', colors=RAINFALL_COLOR)
+        for label in rain_axes.get_yticklabels():
+            label.set_fontproperties(tick_font)
 
         # Convert the x axis labels to days of the week
         labels = axes.get_xticks().tolist()

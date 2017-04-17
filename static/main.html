@@ -79,8 +79,8 @@
         {
             function delayedCall()
             {
-                // Calls updateTextLists after delay of one minute
-                setTimeout(updateTextLists, 60000)
+                // Calls updateTextLists after delay of half an hour
+                setTimeout(updateTextLists, 1800000)
             }
             $.getJSON(BASEURL.concat("/descriptor"), function(texts)
             {
@@ -100,7 +100,7 @@
                     }
                 });
             });
-            setTimeout(delayedCall, 60000);
+            setTimeout(delayedCall, 1800000);
         }
 
         function updateGraphs(days)
