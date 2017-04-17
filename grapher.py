@@ -103,9 +103,9 @@ def plot_vals(Database, days):
         labels = [date.strftime('%a\n(%m/%d)') for date in labels]
         axes.set_xticklabels(labels)
 
-        fig.savefig('./static/' + Database.__name__ + '.png', facecolor=(1, 1, 1, 0), bbox_inches='tight', dpi=230)
+        fig.savefig('./gen/' + Database.__name__ + '.png', facecolor=(1, 1, 1, 0), bbox_inches='tight', dpi=230)
 
 
-def update_graphs():
+if __name__ == "__main__":
     plot_vals(GageHeight, 10)
     plot_vals(DischargeRate, 10)

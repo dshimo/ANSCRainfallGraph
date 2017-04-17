@@ -1,11 +1,13 @@
 import datetime
 import threading
-from flask import Flask,jsonify
+from flask import Flask, jsonify
 import sys
 from apiworker import update_db
-from grapher import update_graphs
+from grapher import plot_vals
+from models import GageHeight, DischargeRate
 from flask_apscheduler import APScheduler
 from descriptor import make_descriptions
+import base64
 
 app = Flask(__name__)
 logger_lock = threading.Lock()
@@ -55,6 +57,18 @@ def hello():
 def descriptor():
     d = make_descriptions()
     return jsonify(d)
+
+
+@app.route("/graph/<graph_type>/<int:days>")
+def generate_graph(graph_type, days):
+    if graph_type == "GageHeight":
+        plot_vals(GageHeight, days)
+    elif graph_type == "DischargeRate":
+        plot_vals(DischargeRate, days)
+    filename = "./gen/" + graph_type + ".png"
+    with open(filename, 'rb') as img:
+        data = img.read()
+        return base64.b64encode(data)
 
 if __name__ == "__main__":
     app.run()

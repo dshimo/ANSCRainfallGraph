@@ -44,7 +44,7 @@ def make_descriptions():
 def discharge_text():
     listDescriptions = []
 
-    data = current("discharge rate", DischargeRate, "ft\u003csup\u003e3\u003c\u002Fsup\u003e per second")
+    data = current("flow speed", DischargeRate, "ft\u003csup\u003e3\u003c\u002Fsup\u003e per second")
     description = data[0]
     for word in DISCHARGE:
         val = round(DISCHARGE[word][0](data[1]), 2)
@@ -56,7 +56,7 @@ def discharge_text():
 def gage_text():
     listDescriptions = []
 
-    data = current("gage height", GageHeight, "feet")
+    data = current("depth", GageHeight, "feet")
     description = data[0]
     for word in GAGEHEIGHT:
         val = GAGEHEIGHT[word][0](data[1])

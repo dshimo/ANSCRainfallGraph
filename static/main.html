@@ -10,9 +10,9 @@
             GAGE_HEIGHT: 2,
             FAQ: 3
         };
-        var gageHeightTexts = ["LOADING TEXT"];
-        var dischargeRateTexts = ["LOADING TEXT"];
-        var faqTexts = ["LOADING TEXT"];
+        var gageHeightTexts = ["Loading text..."];
+        var dischargeRateTexts = ["Loading text..."];
+        var faqTexts = ["Loading text..."];
         // These lists are used to keep track of which texts have already been displayed
         var dischargeRateTextsUsed = [];
         var gageHeightTextsUsed = [];
@@ -102,8 +102,31 @@
             });
             setTimeout(delayedCall, 60000);
         }
-        setTimeout(changeTexts, 10000);
+
+        function updateGraphs(days)
+        {
+            function delayedCall()
+            {
+                // Calls updateGraphs after delay of half an hour
+                setTimeout(updateGraphs, 1800000)
+            }
+            $.get(BASEURL.concat("/graph/GageHeight/".concat(String(days))), function(img)
+            {
+                $("#GageHeight").fadeOut(1000, function() {
+                    $("#GageHeight").attr("src","data:image/png;base64,".concat(img));
+                }).fadeIn(500);
+            });
+            $.get(BASEURL.concat("/graph/DischargeRate/".concat(String(days))), function(img)
+            {
+                $("#DischargeRate").fadeOut(1000, function() {
+                    $("#DischargeRate").attr("src","data:image/png;base64,".concat(img));
+                }).fadeIn(500);
+            });
+            setTimeout(delayedCall, 1800000)
+        }
+        updateGraphs(10);
         updateTextLists();
+        setTimeout(changeTexts, 10000);
     </script>
     <meta charset="UTF-8">
     <title>Barton Springs Rainfall Graph</title>
@@ -154,14 +177,14 @@
                 col-md-6
                 col-lg-6
                 graphContainer">
-        <img height="609" width="900" src="/static/GageHeight.png" />
+        <img id="GageHeight" height="609" width="900" src="/static/GageHeight.png" />
     </div>
     <div class="col-xs-12
                 col-sm-8
                 col-md-6
                 col-lg-6
                 graphContainer">
-        <img height="609" width="900" src="/static/DischargeRate.png" />
+        <img id="DischargeRate" height="609" width="900" src="/static/DischargeRate.png" />
     </div>
 </div>
 <div class="row
