@@ -1,12 +1,10 @@
 from random import uniform,randint
-from models import DischargeRate,GageHeight
+from models import DischargeRate,GageHeight,Rainfall,TotalRainfall
 from pony import orm
 import datetime
 import dateutil.parser as dparser
 
 # "lawns"   : (lambda x: x*145.29*6048000, "That's enough to water @ lawns per week!"),
-# milk to cereal was too variable. made it into glasses of milk instead. used 8oz cups
-# spits are also variable
 # "punch"   : (lambda x: x, "That's the same force as getting punched by @ average men!")}
 DISCHARGE = {"bottles": (lambda x: x*7.5708,"That's like pouring out @ water bottles per second!"),
              "taps": (lambda x: x/0.036667, "That's roughly equivalent to @ kitchen sinks turned on at the same time!"),
@@ -36,9 +34,24 @@ def make_descriptions():
                             "Construction on the dams that created a permanent pool at Barton Springs began in 1920.",
                             "Andrew Zilker deeded the parklands and Barton Springs to the City of Austin in 1918.",
                             "Barton Springs Pool is subject to flooding when there are heavy rains in the hill country.",
-                            "Barton Springs Salamanders are tailed amphibians that are uniquely adapted to thrive in a spring environment."]}
+                            "Barton Springs Salamanders are tailed amphibians that are uniquely adapted to thrive in a spring environment."],
+                    "rainfall": rain_text()}
 
     return descriptions
+
+
+def current(strVal, Database, strValUnits):
+    with orm.db_session:
+        # fetch most current datetime for val
+        latest = orm.max(v.time_stamp for v in Database)
+        if not isinstance(latest, datetime.datetime):
+            latest = dparser.parse(latest)
+        val = orm.select(v for v in Database if v.time_stamp == latest)
+        # should only obtain single element with latest timestamp
+        for v in val:
+            val = int(v.value)
+
+    return ["The " + strVal + " is currently " + str(val) + " " + strValUnits + ".", val]
 
 
 def discharge_text():
@@ -67,19 +80,21 @@ def gage_text():
     
     return listDescriptions 
 
-
-def current(strVal, Database, strValUnits):
+def rain_text():
     with orm.db_session:
-        # fetch most current datetime for val
-        latest = orm.max(v.time_stamp for v in Database)
+        # fetch most current datetime for val and days
+        latest = orm.max(v.time_stamp for v in TotalRainfall)
         if not isinstance(latest, datetime.datetime):
             latest = dparser.parse(latest)
-        val = orm.select(v for v in Database if v.time_stamp == latest)
-        # should only obtain single element with latest timestamp
+        val = orm.select(v for v in TotalRainfall if v.time_stamp == latest)
+        # should only obtain single ement with latest timestamp
         for v in val:
-            val = int(v.value)
+            days = int(v.days)
+            value = v.value
 
-    return ["The " + strVal + " is currently " + str(val) + " " + strValUnits + ".", val]
+    listDescription = ["The total rainfall has been " + str(round(value, 2)) + " inches over the past " + str(days) + " days."]
+
+    return listDescription
 
 if __name__ == "__main__":
     make_descriptions()
