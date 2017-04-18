@@ -12,7 +12,7 @@ var faqTexts = ["Loading text..."];
 var dischargeRateTextsUsed = [];
 var gageHeightTextsUsed = [];
 var faqTextsUsed = [];
-var delay = 5000;
+var delay = 15000;
 // Figure out what text to display next
 // dischargeRate: true if this text is for discharge rate, false if for gage height
 function getText(text)
