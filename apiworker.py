@@ -10,7 +10,7 @@ RAINFALL = '00045'
 
 # Site codes
 BARTON = '08155500'
-WELLS_BRANCH = '08158110'
+ONION_CREEK = '08158700'
 
 
 def get_values(period, site, *params):
@@ -48,7 +48,7 @@ def get_values(period, site, *params):
 def update_db(period):
     with orm.db_session:
         barton = get_values(period, BARTON, DISCHARGE, GAGE_HEIGHT)
-        rainfall = get_values(period, WELLS_BRANCH, RAINFALL)
+        rainfall = get_values(period, ONION_CREEK, RAINFALL)
         result = {**barton, **rainfall}
         for key in result.keys():
             if key == DISCHARGE:
