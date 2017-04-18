@@ -8,11 +8,13 @@ var textEnum =
 var gageHeightTexts = ["Loading text..."];
 var dischargeRateTexts = ["Loading text..."];
 var faqTexts = ["Loading text..."];
+var rainfallText = "Loading text...";
 // These lists are used to keep track of which texts have already been displayed
 var dischargeRateTextsUsed = [];
 var gageHeightTextsUsed = [];
 var faqTextsUsed = [];
 var delay = 15000;
+var display_rainfall = true;
 // Figure out what text to display next
 // dischargeRate: true if this text is for discharge rate, false if for gage height
 function getText(text)
@@ -39,12 +41,21 @@ function getText(text)
     var curIndex = -1;
     while (!updated)
     {
-        curIndex = Math.floor(Math.random() * curTexts.length);
-        var usedIndex = $.inArray(curIndex, curTextsUsed);
-        if (usedIndex === -1)
+        if(display_rainfall && text === textEnum.FAQ)
         {
-            curTextsUsed.push(curIndex);
-            updated = true;
+            display_rainfall = false;
+            return rainfallText;
+        }
+        else {
+            curIndex = Math.floor(Math.random() * curTexts.length);
+            var usedIndex = $.inArray(curIndex, curTextsUsed);
+            if (usedIndex === -1) {
+                curTextsUsed.push(curIndex);
+                updated = true;
+            }
+            if(text === textEnum.FAQ) {
+                display_rainfall = true;
+            }
         }
     }
     return curTexts[curIndex];
@@ -92,6 +103,10 @@ function updateTextLists()
             else if(key === "gage")
             {
                 gageHeightTexts = val;
+            }
+            else if(key === "rainfall")
+            {
+                rainfallText = val[0];
             }
         });
     });
