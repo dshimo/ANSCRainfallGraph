@@ -10,7 +10,7 @@ RAINFALL = '00045'
 
 # Site codes
 BARTON = '08155500'
-WELLS_BRANCH = '08158110'
+ONION_CREEK = '08158700'
 
 
 def get_values(period, site, *params):
@@ -48,13 +48,15 @@ def get_values(period, site, *params):
 def update_db(period):
     with orm.db_session:
         barton = get_values(period, BARTON, DISCHARGE, GAGE_HEIGHT)
-        rainfall = get_values(period, WELLS_BRANCH, RAINFALL)
+        rainfall = get_values(period, ONION_CREEK, RAINFALL)
         result = {**barton, **rainfall}
         for key in result.keys():
             if key == DISCHARGE:
                 for value in result[key]:
                     if not orm.exists(v for v in DischargeRate if v.time_stamp == value[0]):
-                        DischargeRate(time_stamp=value[0], value=value[1])
+                        # Convert to gallons per second
+                        gallons = float(value[1]) * 7.48051948
+                        DischargeRate(time_stamp=value[0], value=gallons)
             elif key == GAGE_HEIGHT:
                 for value in result[key]:
                     if not orm.exists(v for v in GageHeight if v.time_stamp == value[0]):
@@ -63,3 +65,6 @@ def update_db(period):
                 for value in result[key]:
                     if not orm.exists(v for v in Rainfall if v.time_stamp == value[0]):
                         Rainfall(time_stamp=value[0], value=value[1])
+
+if __name__ == "__main__":
+    update_db(365)

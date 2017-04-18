@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as font_manager
-from models import DischargeRate, GageHeight, Rainfall
+from models import DischargeRate, GageHeight, Rainfall, TotalRainfall
 from pony import orm
 import datetime
 import dateutil.parser as dparser
@@ -66,6 +66,10 @@ def get_vals(Database, days):
             y.append(value.value)
     return x, y
 
+def store_rainfall(days, value):
+    with orm.db_session:
+        date = datetime.datetime.now()
+        TotalRainfall(days=days, value=value, time_stamp=date)
 
 def plot_vals(Database, days):
     """
@@ -77,6 +81,7 @@ def plot_vals(Database, days):
     x, y = get_vals(Database, days)
     rain_x, rain_y = get_vals(Rainfall, days)
     cumulative(rain_y)
+    store_rainfall(days, rain_y[-1])
     x, y = smooth_vals(x, y, days, 12)
     label_font = font_manager.FontProperties(fname='./fonts/Oswald-Bold.ttf', size=18)
     tick_font = font_manager.FontProperties(fname='./fonts/Oswald-Regular.ttf', size=12)
@@ -87,7 +92,7 @@ def plot_vals(Database, days):
         # Set line width
         plt.setp(line, linewidth=5, color=GRAPH_COLOR)
         if Database == DischargeRate:
-            y_label = 'Flow Speed ($ft^3$/s)'
+            y_label = 'Flow Speed (gallons/s)'
         else:
             y_label = 'Depth (ft)'
         axes.set_ylabel(y_label, color=GRAPH_COLOR, fontproperties=label_font)
