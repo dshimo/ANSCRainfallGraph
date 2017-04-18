@@ -87,7 +87,7 @@ def plot_vals(Database, days):
         # Set line width
         plt.setp(line, linewidth=5, color=GRAPH_COLOR)
         if Database == DischargeRate:
-            y_label = 'Flow Speed ($ft^3$/s)'
+            y_label = 'Flow Speed (gallons/s)'
         else:
             y_label = 'Depth (ft)'
         axes.set_ylabel(y_label, color=GRAPH_COLOR, fontproperties=label_font)

@@ -54,7 +54,9 @@ def update_db(period):
             if key == DISCHARGE:
                 for value in result[key]:
                     if not orm.exists(v for v in DischargeRate if v.time_stamp == value[0]):
-                        DischargeRate(time_stamp=value[0], value=value[1])
+                        # Convert to gallons per second
+                        gallons = float(value[1]) * 7.48051948
+                        DischargeRate(time_stamp=value[0], value=gallons)
             elif key == GAGE_HEIGHT:
                 for value in result[key]:
                     if not orm.exists(v for v in GageHeight if v.time_stamp == value[0]):
@@ -63,3 +65,6 @@ def update_db(period):
                 for value in result[key]:
                     if not orm.exists(v for v in Rainfall if v.time_stamp == value[0]):
                         Rainfall(time_stamp=value[0], value=value[1])
+
+if __name__ == "__main__":
+    update_db(365)

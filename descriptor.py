@@ -8,11 +8,11 @@ import dateutil.parser as dparser
 # milk to cereal was too variable. made it into glasses of milk instead. used 8oz cups
 # spits are also variable
 # "punch"   : (lambda x: x, "That's the same force as getting punched by @ average men!")}
-DISCHARGE = {"bottles": (lambda x: x*56.6337,"That's like pouring out @ water bottles per second!"),
-             "taps": (lambda x: x*448.8312, "That's roughly equivalent to @ kitchen sinks turned on at the same time!"),
-             "milk": (lambda x: x*119.68825, "If Barton Springs was milk, you would need @ glasses every second to catch it all!"),
-             "bathtubs": (lambda x: x*314.18184, "That's enough water to fill @ bathtubs per second!"),
-             "toilets": (lambda x: x/0.0267361, "That's the same rate as @ toilets being flushed at the same time!")}
+DISCHARGE = {"bottles": (lambda x: x*7.5708,"That's like pouring out @ water bottles per second!"),
+             "taps": (lambda x: x/0.036667, "That's roughly equivalent to @ kitchen sinks turned on at the same time!"),
+             "milk": (lambda x: x*10.666666667, "If Barton Springs was milk, you could eat @ bowls of cereal per second!"),
+             "bathtubs": (lambda x: x/80, "That's enough water to fill @ bathtubs per second!"),
+             "toilets": (lambda x: x/0.35, "That's the same rate as @ toilets being flushed at the same time!")}
 
 GAGEHEIGHT = {"cars": (lambda x: x//5, "That's like @ cars stacked on top of each other!"),
               "buses": (lambda x: x//10, "That's more than @ buses stacked on top of each other!"),
@@ -28,14 +28,14 @@ def make_descriptions():
                     "faq": ["The temperature of Barton Springs is 68-70 degrees year round.",
                             "The outflow of Barton Springs measures between 30-50 million gallons a day.",
                             "Barton Springs is home to the endangered Barton Springs Salamander.",
-                            "The depth of Barton Springs pool runs from 0 ft at the shallow end to 18 ft at the deep end.",
+                            "The depth of Barton Springs Pool runs from 0 ft at the shallow end to 18 ft at the deep end.",
                             'Barton Springs is named after William "Billy" Barton who settled his family here in 1837.',
                             "Three of the four springs in Zilker Park are named after William Barton's daughters, Zenobia, Parthenia and Eliza.",
                             "Before Europeans settled the area the indigenous peoples of Central Texas considered the springs to be sacred.",
                             "Spanish explorers arrived here around 1730 and set up temporary missions along Barton Creek.",
                             "Construction on the dams that created a permanent pool at Barton Springs began in 1920.",
                             "Andrew Zilker deeded the parklands and Barton Springs to the City of Austin in 1918.",
-                            "Barton Springs pool is subject to flooding when there are heavy rains in the hill country.",
+                            "Barton Springs Pool is subject to flooding when there are heavy rains in the hill country.",
                             "Barton Springs Salamanders are tailed amphibians that are uniquely adapted to thrive in a spring environment."]}
 
     return descriptions
@@ -44,7 +44,7 @@ def make_descriptions():
 def discharge_text():
     listDescriptions = []
 
-    data = current("flow speed", DischargeRate, "ft\u003csup\u003e3\u003c\u002Fsup\u003e per second")
+    data = current("flow speed", DischargeRate, "gallons per second")
     description = data[0]
     for word in DISCHARGE:
         val = round(DISCHARGE[word][0](data[1]), 2)
