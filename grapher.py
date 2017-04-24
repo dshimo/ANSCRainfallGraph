@@ -6,6 +6,9 @@ import datetime
 import dateutil.parser as dparser
 from scipy.interpolate import spline
 import numpy as np
+import threading
+
+grapher_lock = threading.Lock()
 
 
 EDGE_COLOR = "#FCE694"
@@ -66,10 +69,12 @@ def get_vals(Database, days):
             y.append(value.value)
     return x, y
 
+
 def store_rainfall(days, value):
     with orm.db_session:
         date = datetime.datetime.now()
         TotalRainfall(days=days, value=value, time_stamp=date)
+
 
 def plot_vals(Database, days):
     """
@@ -114,8 +119,8 @@ def plot_vals(Database, days):
         labels = [datetime.datetime.fromtimestamp(date) for date in labels]
         labels = [date.strftime('%a\n(%m/%d)') for date in labels]
         axes.set_xticklabels(labels)
-
-        fig.savefig('./gen/' + Database.__name__ + '.png', facecolor=(1, 1, 1, 0), bbox_inches='tight', dpi=230)
+        with grapher_lock:
+            fig.savefig('./gen/' + Database.__name__ + '.png', facecolor=(1, 1, 1, 0), bbox_inches='tight', dpi=230)
 
 
 if __name__ == "__main__":

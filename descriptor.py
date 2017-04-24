@@ -80,6 +80,7 @@ def gage_text():
     
     return listDescriptions 
 
+
 def rain_text():
     with orm.db_session:
         # fetch most current datetime for val and days

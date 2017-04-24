@@ -3,7 +3,7 @@ import threading
 from flask import Flask, jsonify
 import sys
 from apiworker import update_db
-from grapher import plot_vals
+from grapher import plot_vals, grapher_lock
 from models import GageHeight, DischargeRate
 from flask_apscheduler import APScheduler
 from descriptor import make_descriptions
@@ -11,6 +11,7 @@ import base64
 import os
 
 app = Flask(__name__)
+app.days = 10
 logger_lock = threading.Lock()
 
 
@@ -22,6 +23,13 @@ class Config(object):
             'args': (),
             'trigger': 'interval',
             'seconds': 3600  # Update the database once an hour
+        },
+        {
+            'id': 'job2',
+            'func': 'app:grapher_update',
+            'args': (),
+            'trigger': 'interval',
+            'seconds': 3600  # Draw new graphs once an hour
         }
     ]
 
@@ -41,6 +49,13 @@ def apiworker_update():
     log("Updating database...")
     update_db(1)
     log("Finished updating database!")
+
+
+def grapher_update():
+    log("Generating graphs...")
+    plot_vals(GageHeight, app.days)
+    plot_vals(DischargeRate, app.days)
+    log("Finished generating graphs!")
 
 
 app.config.from_object(Config())
@@ -64,14 +79,12 @@ def descriptor():
 
 @app.route("/graph/<graph_type>/<int:days>")
 def generate_graph(graph_type, days):
-    if graph_type == "GageHeight":
-        plot_vals(GageHeight, days)
-    elif graph_type == "DischargeRate":
-        plot_vals(DischargeRate, days)
+    app.days = days
     filename = "./gen/" + graph_type + ".png"
-    with open(filename, 'rb') as img:
-        data = img.read()
-        return base64.b64encode(data)
+    with grapher_lock:
+        with open(filename, 'rb') as img:
+            data = img.read()
+            return base64.b64encode(data)
 
 if __name__ == "__main__":
     app.run()
