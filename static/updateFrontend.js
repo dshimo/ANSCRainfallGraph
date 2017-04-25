@@ -118,7 +118,7 @@ function updateGraphs(days)
     function delayedCall()
     {
         // Calls updateGraphs after delay of half an hour
-        setTimeout(updateGraphs, 1800000)
+        setTimeout(function(){updateGraphs(days);}, 1800000)
     }
     $.get(BASEURL.concat("/graph/GageHeight/".concat(String(days))), function(img)
     {
