@@ -77,4 +77,4 @@ def update_db(period):
                         Ph(time_stamp=value[0], value=value[1])
 
 if __name__ == "__main__":
-    update_db(365)
+    update_db(10)
