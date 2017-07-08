@@ -36,7 +36,7 @@ class Config(object):
 
 def log(string):
     with logger_lock:
-        log = open('log.txt', 'a')
+        log = open('log.txt', 'w')
         now = datetime.datetime.now()
         print(str(now), end=": ", file=sys.stderr)
         print(string, file=sys.stderr)

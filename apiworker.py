@@ -1,12 +1,14 @@
 import requests
 import dateutil.parser
-from models import DischargeRate, GageHeight, Rainfall
+from models import DischargeRate, GageHeight, Rainfall, Temperature, Ph
 from pony import orm
 
 # Parameter codes
 DISCHARGE = '00060'
 GAGE_HEIGHT = '00065'
 RAINFALL = '00045'
+TEMPERATURE = '00010'
+PH = '00400'
 
 # Site codes
 BARTON = '08155500'
@@ -47,7 +49,7 @@ def get_values(period, site, *params):
 
 def update_db(period):
     with orm.db_session:
-        barton = get_values(period, BARTON, DISCHARGE, GAGE_HEIGHT)
+        barton = get_values(period, BARTON, DISCHARGE, GAGE_HEIGHT, TEMPERATURE, PH)
         rainfall = get_values(period, ONION_CREEK, RAINFALL)
         result = {**barton, **rainfall}
         for key in result.keys():
@@ -65,6 +67,14 @@ def update_db(period):
                 for value in result[key]:
                     if not orm.exists(v for v in Rainfall if v.time_stamp == value[0]):
                         Rainfall(time_stamp=value[0], value=value[1])
+            elif key == TEMPERATURE:
+                for value in result[key]:
+                    if not orm.exists(v for v in Temperature if v.time_stamp == value[0]):
+                        Temperature(time_stamp=value[0], value=value[1])
+            elif key == PH:
+                for value in result[key]:
+                    if not orm.exists(v for v in Ph if v.time_stamp == value[0]):
+                        Ph(time_stamp=value[0], value=value[1])
 
 if __name__ == "__main__":
     update_db(365)

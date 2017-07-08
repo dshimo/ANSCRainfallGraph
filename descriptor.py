@@ -1,5 +1,5 @@
 from random import uniform,randint
-from models import DischargeRate,GageHeight,Rainfall,TotalRainfall
+from models import DischargeRate,GageHeight,Rainfall,TotalRainfall, Temperature, Ph
 from pony import orm
 import datetime
 import dateutil.parser as dparser
@@ -34,7 +34,9 @@ def make_descriptions():
                             "Construction on the dams that created a permanent pool at Barton Springs began in 1920.",
                             "Andrew Zilker deeded the parklands and Barton Springs to the City of Austin in 1918.",
                             "Barton Springs Pool is subject to flooding when there are heavy rains in the hill country.",
-                            "Barton Springs Salamanders are tailed amphibians that are uniquely adapted to thrive in a spring environment."],
+                            "Barton Springs Salamanders are tailed amphibians that are uniquely adapted to thrive in a spring environment.",
+                            temperature_text(),
+                            ph_text()],
                     "rainfall": rain_text()}
 
     return descriptions
@@ -88,14 +90,42 @@ def rain_text():
         if not isinstance(latest, datetime.datetime):
             latest = dparser.parse(latest)
         val = orm.select(v for v in TotalRainfall if v.time_stamp == latest)
-        # should only obtain single ement with latest timestamp
+        # should only obtain single element with latest timestamp
         for v in val:
             days = int(v.days)
             value = v.value
 
-    listDescription = ["The total rainfall has been " + str(round(value, 2)) + " inches over the past " + str(days) + " days."]
+    listDescriptions = ["The total rainfall has been " + str(round(value, 2)) + " inches over the past " + str(days) + " days."]
 
-    return listDescription
+    return listDescriptions
+
+
+def ph_text():
+    with orm.db_session:
+        latest = orm.max(v.time_stamp for v in Ph)
+        if not isinstance(latest, datetime.datetime):
+            latest = dparser.parse(latest)
+        val = orm.select(v for v in Ph if v.time_stamp == latest)
+        for v in val:
+            value = v.value
+
+    description = "The pH of Barton Springs is currently " + str(value) + "."
+
+    return description
+
+
+def temperature_text():
+    with orm.db_session:
+        latest = orm.max(v.time_stamp for v in Temperature)
+        if not isinstance(latest, datetime.datetime):
+            latest = dparser.parse(latest)
+        val = orm.select(v for v in Temperature if v.time_stamp == latest)
+        for v in val:
+            value = 9.0/5.0 * v.value + 32
+
+    description = "The water temperature of Barton Springs is currently " + str(value) + "°F."
+
+    return description
 
 if __name__ == "__main__":
-    make_descriptions()
+    print(make_descriptions())

@@ -21,6 +21,16 @@ class Rainfall(db.Entity):
     value = orm.Required(float)
 
 
+class Ph(db.Entity):
+    time_stamp = orm.PrimaryKey(datetime.datetime)
+    value = orm.Required(float)
+
+
+class Temperature(db.Entity):
+    time_stamp = orm.PrimaryKey(datetime.datetime)
+    value = orm.Required(float)
+
+
 class TotalRainfall(db.Entity):
     time_stamp = orm.PrimaryKey(datetime.datetime)
     value = orm.Required(float)
