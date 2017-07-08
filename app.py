@@ -87,4 +87,5 @@ def generate_graph(graph_type, days):
             return base64.b64encode(data)
 
 if __name__ == "__main__":
+    os.chdir('/home/pi/src/ANSCRainfallGraph/')
     app.run()
