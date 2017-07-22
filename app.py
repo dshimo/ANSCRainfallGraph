@@ -1,6 +1,7 @@
 import datetime
 import threading
 from flask import Flask, jsonify
+import fcntl
 import sys
 from apiworker import update_db
 from grapher import plot_vals, grapher_lock
@@ -88,4 +89,12 @@ def generate_graph(graph_type, days):
 
 if __name__ == "__main__":
     os.chdir(os.path.expanduser('~') + '/src/ANSCRainfallGraph/')
+    pid_file = 'program.pid'
+    fp = open(pid_file, 'w')
+    try:
+        fcntl.lockf(fp, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except IOError:
+        # another instance is running
+        print("another instance running, exiting...")
+        sys.exit(0)
     app.run()
