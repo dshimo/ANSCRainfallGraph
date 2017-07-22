@@ -87,7 +87,7 @@ def plot_vals(Database, days):
     rain_x, rain_y = get_vals(Rainfall, days)
     cumulative(rain_y)
     store_rainfall(days, rain_y[-1])
-    x, y = smooth_vals(x, y, days, 12)
+    x, y = smooth_vals(x, y, days, 3)
     label_font = font_manager.FontProperties(fname='./fonts/Oswald-Bold.ttf', size=18)
     tick_font = font_manager.FontProperties(fname='./fonts/Oswald-Regular.ttf', size=12)
     with plt.rc_context({'axes.edgecolor': EDGE_COLOR, 'xtick.color': X_TICK_COLOR}):
