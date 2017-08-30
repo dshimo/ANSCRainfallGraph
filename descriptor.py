@@ -71,7 +71,7 @@ def discharge_text():
 def gage_text():
     listDescriptions = []
 
-    data = current("depth", GageHeight, "feet")
+    data = current("gage height", GageHeight, "feet")
     description = data[0]
     for word in GAGEHEIGHT:
         val = GAGEHEIGHT[word][0](data[1])

@@ -99,7 +99,7 @@ def plot_vals(Database, days):
         if Database == DischargeRate:
             y_label = 'Flow Speed (gallons/s)'
         else:
-            y_label = 'Depth (ft)'
+            y_label = 'Gage Height (ft)'
         axes.set_ylabel(y_label, color=GRAPH_COLOR, fontproperties=label_font)
         axes.tick_params('y', colors=GRAPH_COLOR)
         for label in (axes.get_xticklabels() + axes.get_yticklabels()):
