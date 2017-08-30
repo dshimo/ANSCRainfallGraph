@@ -36,3 +36,9 @@ class TotalRainfall(db.Entity):
     value = orm.Required(float)
     days = orm.Required(int)
 db.generate_mapping(create_tables=True)
+
+
+# Drop all data and reset db
+def reset_db():
+    db.drop_all_tables(True)
+    db.create_tables()

@@ -1,6 +1,6 @@
 import requests
 import dateutil.parser
-from models import DischargeRate, GageHeight, Rainfall, Temperature, Ph
+from models import DischargeRate, GageHeight, Rainfall, Temperature, Ph, reset_db
 from pony import orm
 
 # Parameter codes
@@ -48,6 +48,8 @@ def get_values(period, site, *params):
 
 
 def update_db(period):
+    # Delete all the current data to get the most accurate values
+    reset_db()
     with orm.db_session:
         barton = get_values(period, BARTON, DISCHARGE, GAGE_HEIGHT, TEMPERATURE, PH)
         rainfall = get_values(period, ONION_CREEK, RAINFALL)
@@ -55,26 +57,21 @@ def update_db(period):
         for key in result.keys():
             if key == DISCHARGE:
                 for value in result[key]:
-                    if not orm.exists(v for v in DischargeRate if v.time_stamp == value[0]):
-                        # Convert to gallons per second
-                        gallons = float(value[1]) * 7.48051948
-                        DischargeRate(time_stamp=value[0], value=gallons)
+                    # Convert to gallons per second
+                    gallons = float(value[1]) * 7.48051948
+                    DischargeRate(time_stamp=value[0], value=gallons)
             elif key == GAGE_HEIGHT:
                 for value in result[key]:
-                    if not orm.exists(v for v in GageHeight if v.time_stamp == value[0]):
-                        GageHeight(time_stamp=value[0], value=value[1])
+                    GageHeight(time_stamp=value[0], value=value[1])
             elif key == RAINFALL:
                 for value in result[key]:
-                    if not orm.exists(v for v in Rainfall if v.time_stamp == value[0]):
-                        Rainfall(time_stamp=value[0], value=value[1])
+                    Rainfall(time_stamp=value[0], value=value[1])
             elif key == TEMPERATURE:
                 for value in result[key]:
-                    if not orm.exists(v for v in Temperature if v.time_stamp == value[0]):
-                        Temperature(time_stamp=value[0], value=value[1])
+                    Temperature(time_stamp=value[0], value=value[1])
             elif key == PH:
                 for value in result[key]:
-                    if not orm.exists(v for v in Ph if v.time_stamp == value[0]):
-                        Ph(time_stamp=value[0], value=value[1])
+                    Ph(time_stamp=value[0], value=value[1])
 
 if __name__ == "__main__":
     update_db(10)
