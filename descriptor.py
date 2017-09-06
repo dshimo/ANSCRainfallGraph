@@ -1,8 +1,8 @@
-from random import uniform,randint
-from models import DischargeRate,GageHeight,Rainfall,TotalRainfall, Temperature, Ph
+from models import DischargeRate, GageHeight, Temperature, Ph
 from pony import orm
 import datetime
 import dateutil.parser as dparser
+from getvals import get_total_rainfall
 
 # "lawns"   : (lambda x: x*145.29*6048000, "That's enough to water @ lawns per week!"),
 # "punch"   : (lambda x: x, "That's the same force as getting punched by @ average men!")}
@@ -84,17 +84,8 @@ def gage_text():
 
 
 def rain_text():
-    with orm.db_session:
-        # fetch most current datetime for val and days
-        latest = orm.max(v.time_stamp for v in TotalRainfall)
-        if not isinstance(latest, datetime.datetime):
-            latest = dparser.parse(latest)
-        val = orm.select(v for v in TotalRainfall if v.time_stamp == latest)
-        # should only obtain single element with latest timestamp
-        for v in val:
-            days = int(v.days)
-            value = v.value
-
+    days = 10
+    value = get_total_rainfall(days)
     listDescriptions = ["The total rainfall has been " + str(round(value, 2)) + " inches over the past " + str(days) + " days."]
 
     return listDescriptions

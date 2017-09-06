@@ -1,9 +1,8 @@
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as font_manager
-from models import DischargeRate, GageHeight, Rainfall, TotalRainfall
-from pony import orm
+from models import DischargeRate, GageHeight
+from getvals import get_vals, get_cumulative_rainfall_vals
 import datetime
-import dateutil.parser as dparser
 from scipy.interpolate import spline
 import numpy as np
 import threading
@@ -15,12 +14,6 @@ EDGE_COLOR = "#FCE694"
 RAINFALL_COLOR = "#C1DBE3"
 GRAPH_COLOR = "#F6FEAA"
 X_TICK_COLOR = "#FCE694"
-
-
-def cumulative(x):
-    for index in range(len(x)):
-        if index != 0:
-            x[index] += x[index-1]
 
 
 def smooth_vals(x, y, days, points_per_day):
@@ -45,37 +38,6 @@ def smooth_vals(x, y, days, points_per_day):
     return interpolated_x, smoothed_y
 
 
-def get_vals(Database, days):
-    days_delta = datetime.timedelta(days=days)
-    with orm.db_session:
-        # Get the datetime of the latest value in the database
-        latest = orm.max(v.time_stamp for v in Database)
-        if not isinstance(latest, datetime.datetime):
-            latest = dparser.parse(latest)
-        datetime_cutoff = latest - days_delta
-        values = orm.select(v for v in Database if v.time_stamp > datetime_cutoff)
-        # x axis values to plot (datetime)
-        x = []
-        # y axis values to plot (value)
-        y = []
-        for value in values:
-            cur_time_stamp = value.time_stamp
-            # print(value, end=": ")
-            # print(value.value)
-            # same bug as above
-            if not isinstance(cur_time_stamp, datetime.datetime):
-                cur_time_stamp = dparser.parse(cur_time_stamp)
-            x.append(cur_time_stamp.timestamp())
-            y.append(value.value)
-    return x, y
-
-
-def store_rainfall(days, value):
-    with orm.db_session:
-        date = datetime.datetime.now()
-        TotalRainfall(days=days, value=value, time_stamp=date)
-
-
 def plot_vals(Database, days):
     """
     Display a plot for the given data
@@ -84,9 +46,7 @@ def plot_vals(Database, days):
     :return: nothing
     """
     x, y = get_vals(Database, days)
-    rain_x, rain_y = get_vals(Rainfall, days)
-    cumulative(rain_y)
-    store_rainfall(days, rain_y[-1])
+    rain_x, rain_y = get_cumulative_rainfall_vals(days)
     x, y = smooth_vals(x, y, days, 3)
     label_font = font_manager.FontProperties(fname='./fonts/Oswald-Bold.ttf', size=18)
     tick_font = font_manager.FontProperties(fname='./fonts/Oswald-Regular.ttf', size=12)
@@ -107,6 +67,7 @@ def plot_vals(Database, days):
 
         # Plot the rainfall
         rain_axes = axes.twinx()
+        rain_axes.set_xmargin(0)
         rain_line = rain_axes.plot(rain_x, rain_y)
         plt.setp(rain_line, linewidth=5, color=RAINFALL_COLOR)
         rain_axes.set_ylabel('Total Rainfall (inches)', color=RAINFALL_COLOR, fontproperties=label_font)

@@ -31,10 +31,6 @@ class Temperature(db.Entity):
     value = orm.Required(float)
 
 
-class TotalRainfall(db.Entity):
-    time_stamp = orm.PrimaryKey(datetime.datetime)
-    value = orm.Required(float)
-    days = orm.Required(int)
 db.generate_mapping(create_tables=True)
 
 
