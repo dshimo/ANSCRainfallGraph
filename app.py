@@ -13,7 +13,6 @@ import os
 
 app = Flask(__name__)
 app.days = 10
-app.update = True
 logger_lock = threading.Lock()
 
 
@@ -24,7 +23,7 @@ class Config(object):
             'func': 'app:apiworker_update',
             'args': (),
             'trigger': 'interval',
-            'seconds': 30  # Update the database once an hour
+            'seconds': 3600  # Update the database once an hour
         }
     ]
 
@@ -41,12 +40,10 @@ def log(string):
 
 
 def apiworker_update():
-    if app.update:
-        log("Updating database...")
-        update_db(10)
-        log("Finished updating database!")
-        grapher_update()
-        app.update = False
+    log("Updating database...")
+    update_db(10)
+    log("Finished updating database!")
+    grapher_update()
 
 
 def grapher_update():
